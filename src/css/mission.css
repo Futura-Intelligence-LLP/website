@@ -1,0 +1,670 @@
+.mission-display {
+  width: 100%;
+  margin: 2rem auto;
+  text-align: left;
+}
+
+/* --- Active Missions Carousel --- */
+.active-missions-carousel {
+  position: relative;
+  width: 100%; /* Use full screen width */
+  margin: 2rem auto 4rem auto;
+  overflow: hidden; /* Hide overflowing items */
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  /* The JS will calculate the transform */
+}
+
+.carousel-item {
+  flex: 0 0 100%; /* Each item takes up the full 100% of the container */
+  box-sizing: border-box;
+  padding: 0 24px;
+  width: 100%;
+}
+
+.carousel-item:last-child {
+  margin-right: 0; /* No margin on the last item */
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 1.5rem;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10; /* Ensure buttons are on top */
+}
+.carousel-btn:hover:not(:disabled) {
+  background-color: rgba(77, 121, 255, 0.5);
+  transform: translateY(-50%) scale(1.05);
+}
+.carousel-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.prev-btn {
+  left: 20px;
+}
+.next-btn {
+  right: 20px;
+}
+
+.mission-card {
+  background: var(--glass-background);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 30px var(--glass-shadow);
+  max-width: 75vw;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.active-missions-container .mission-card:not(:last-child) {
+  margin-bottom: 3rem;
+}
+
+.mission-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.mission-header h2 {
+  margin-bottom: 0;
+  text-align: left;
+  color: var(--color-text-headings);
+  flex: 1;
+}
+
+.status-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.status-Ongoing,
+.status-Planned {
+  color: #ffffff;
+}
+
+.status-Ongoing {
+  background-color: var(--color-status-ongoing);
+  box-shadow: 0 0 8px var(--color-status-ongoing-glow);
+}
+
+.status-Completed {
+  background-color: var(--color-status-completed);
+  box-shadow: 0 0 8px var(--color-status-completed-glow);
+  color: #e0e0e0;
+}
+
+.status-Planned {
+  background-color: var(--color-status-planned);
+  box-shadow: 0 0 8px var(--color-status-planned-glow);
+  color: var(
+    --color-background
+  ); /* Use dark background color for text for high contrast */
+}
+
+.mission-content {
+  line-height: 1.7;
+  color: var(--color-text-primary);
+}
+
+.mission-content .spacing-small {
+  margin: 0.5rem 0;
+}
+
+.mission-content .spacing-medium {
+  margin: 1rem 0;
+}
+
+.mission-content .spacing-large {
+  margin: 1.5rem 0;
+}
+
+.mission-content h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--color-text-headings);
+}
+
+.mission-content ul {
+  list-style: none;
+  padding-left: 1rem;
+}
+
+.mission-content li {
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.mission-content li::before {
+  content: "\f0da"; /* FontAwesome right arrow */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  color: var(--color-accent-blue);
+}
+
+.mission-actions {
+  display: flex;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.roadmap-link-btn {
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1.5rem;
+  background: rgba(95, 208, 104, 0.1);
+  border: 1px solid var(--color-accent-green);
+  color: var(--color-accent-green);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: var(--transition-fast);
+  backdrop-filter: blur(2px);
+  text-align: center;
+  max-width: 400px;
+}
+
+.roadmap-link-btn:hover {
+  background: rgba(95, 208, 104, 0.2);
+  color: var(--color-text-headings);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 20px var(--color-accent-green-glow);
+}
+
+@media (max-width: 767px) {
+  .roadmap-link-btn {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .mission-actions {
+    justify-content: center;
+  }
+
+  .roadmap-link-btn {
+    max-width: 300px;
+  }
+}
+
+/* --- Archived Missions --- */
+.archived-missions {
+  margin-top: 5rem;
+  border-top: 1px solid var(--glass-border);
+  padding-top: 3rem;
+  max-width: 1100px; /* Keep archived missions at a readable width */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.archived-missions h3 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: var(--color-text-headings);
+}
+
+.archived-mission-item {
+  border-bottom: 1px solid #444;
+}
+
+.archived-mission-button {
+  background-color: transparent;
+  color: #fff;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  font-size: 1.2rem;
+  transition: background-color 0.3s ease;
+  font-family: inherit;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.archived-mission-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.archived-mission-button h4 {
+  margin: 0;
+}
+
+.archived-mission-content {
+  padding: 0 18px 18px;
+  background-color: rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  line-height: 1.7;
+}
+
+/* --- Roadmap Section --- */
+.roadmap-section {
+  padding: 4rem 1.5rem;
+}
+
+/* When a roadmap is being viewed, give it a higher z-index to ensure modals appear on top of other sections */
+.roadmap-section.is-active-roadmap {
+  position: relative;
+  z-index: 20;
+}
+
+.roadmap-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.roadmap-title {
+  text-align: center;
+  font-size: 2.25rem;
+  margin-bottom: 2rem;
+  color: var(--color-text-headings);
+}
+
+.roadmap-intro {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 2.5rem auto;
+  font-size: 1.05rem;
+  color: var(--color-text-primary);
+}
+
+/* Mobile-first timeline */
+.roadmap-timeline {
+  position: relative;
+  margin: 0 auto;
+  /* On mobile, add padding for the timeline line and icons */
+  padding: 1rem 0 1rem 39px;
+}
+
+.roadmap-timeline::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  background-color: var(--glass-border);
+  top: 0;
+  bottom: 0; /* The line should span the full height */
+  left: 40px; /* line sits slightly left */
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.25rem;
+  padding-left: 0;
+  width: 100%; /* Ensure items take full width on mobile */
+}
+
+.timeline-icon {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  left: -19px; /* Positioned relative to parent, pulled back into the gutter */
+  top: 12px;
+  background-color: var(--color-accent-blue);
+  border: 4px solid var(--color-background);
+  border-radius: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  box-shadow: 0 0 8px var(--color-accent-blue-glow);
+  color: #fff;
+}
+
+/* Connector line from icon to pill (mobile) */
+.timeline-connector {
+  position: absolute;
+  height: 2px;
+  background-color: var(--color-accent-blue);
+  opacity: 0.5;
+  left: 25px; /* Positioned relative to parent, after the icon */
+  top: 31px; /* center of icon */
+  width: 16px; /* Connector stops before the pill */
+  z-index: 1;
+}
+
+.timeline-trigger {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center; /* Vertically align icon and pill */
+  gap: 0;
+  text-align: left;
+  color: var(--color-text-headings);
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Pill styling */
+.timeline-pill {
+  background: rgba(30, 144, 255, 0.08);
+  border: 1px solid var(--color-accent-blue);
+  border-radius: 20px;
+  padding: 0.6rem 1rem;
+  margin-left: 45px; /* space after icon + connector */
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.timeline-trigger:hover .timeline-pill {
+  background: rgba(30, 144, 255, 0.15);
+  box-shadow: 0 0 12px rgba(30, 144, 255, 0.3);
+}
+
+.timeline-phase-title {
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 500;
+  color: var(--color-text-headings);
+}
+
+.phase-card {
+  width: 100%;
+  background: var(--glass-background);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  box-sizing: border-box;
+  margin-top: 0.75rem;
+  /* Mobile: position as overlay modal */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: calc(100% - 2rem);
+  max-width: 500px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  max-height: 450px; /* Set a max-height for desktop cards */
+}
+
+.phase-header {
+  border-bottom: 1px solid var(--glass-border);
+  padding: 1.25rem 1rem 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.phase-card-title {
+  font-size: 1.3rem;
+  margin: 0;
+  color: var(--color-text-headings);
+  font-weight: 600;
+  flex: 1;
+}
+
+.phase-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.phase-close-btn:hover {
+  color: var(--color-text-headings);
+}
+
+.phase-details {
+  padding: 1rem;
+  overflow-y: auto; /* Make this section scrollable */
+  flex-grow: 1; /* Allow it to fill available space */
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* Consistent spacing between elements */
+}
+
+.phase-duration {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-accent-orange);
+  background: rgba(255, 107, 53, 0.1);
+  border: 1px solid var(--color-accent-orange);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  align-self: flex-start; /* Align to the start of the flex container */
+  margin-bottom: 0.5rem; /* Add some space below it */
+}
+
+.phase-objective {
+  margin: 0;
+}
+
+.phase-milestones {
+  margin-top: 0.5rem;
+}
+
+.phase-milestones h5 {
+  font-size: 1rem;
+  color: var(--color-text-headings);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.phase-milestones ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.phase-milestones li {
+  position: relative;
+  padding-left: 1.75rem; /* Space for the icon */
+  line-height: 1.5;
+}
+
+.phase-milestones li::before {
+  content: "\f058"; /* FontAwesome solid check-circle */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  top: 2px;
+  color: var(--color-accent-green);
+  font-size: 1rem;
+}
+
+.timeline-item.is-active .phase-card {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.phase-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.phase-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Hide the curve on mobile and on the last item on desktop */
+.timeline-item::after {
+  display: none;
+}
+
+/* Desktop: two-column timeline */
+@media (min-width: 768px) {
+  .roadmap-timeline {
+    max-width: 1000px;
+    /* Reset mobile padding */
+    padding: 2rem 0;
+  }
+
+  .roadmap-timeline::before {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .timeline-item {
+    width: 50%;
+    padding: 1rem 2rem;
+    margin: 1.5rem 0;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  /* Hide mobile trigger on desktop */
+  .timeline-trigger {
+    display: none;
+  }
+
+  /* Hide connector and pill on desktop */
+  .timeline-connector {
+    display: none;
+  }
+
+  .timeline-pill {
+    display: none;
+  }
+
+  /* Desktop: show card as static inline element */
+  .phase-card {
+    position: static;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    width: 100%;
+    max-height: 450px; /* Set a max-height for desktop cards */
+    padding: 1rem;
+    margin-top: 0;
+    transition: none;
+  }
+
+  .phase-card-title {
+    display: block;
+  }
+
+  .phase-details {
+    padding: 1rem;
+    overflow-y: auto;
+  }
+
+  .phase-close-btn {
+    display: none; /* Hide close button on desktop */
+  }
+
+  /* Position left/right items around the central line */
+  .timeline-item:nth-child(odd) {
+    align-self: flex-start;
+    margin-left: 0;
+    padding-right: 3rem;
+    text-align: right;
+  }
+
+  .timeline-item:nth-child(even) {
+    align-self: flex-end;
+    margin-left: 50%;
+    padding-left: 3rem;
+    text-align: left;
+  }
+
+  .timeline-item:nth-child(odd) .phase-card {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .timeline-item:nth-child(even) .phase-card {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  /* Icon positioned exactly on the center line */
+  .timeline-item .timeline-icon {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    top: 15px;
+    z-index: 10;
+  }
+
+  .timeline-item:nth-child(odd) .timeline-icon {
+    left: 100%; /* Position relative to the left edge of the container */
+    transform: translateX(
+      -50%
+    ); /* Shift left by half its own width to center */
+  }
+
+  .timeline-item:nth-child(even) .timeline-icon {
+    left: 0;
+    transform: translateX(-50%);
+  }
+}
+
+/* --- Auto-hide Header Styles --- */
+header {
+  /* Ensure the header has a fixed position and transition */
+  position: fixed;
+  transition: top 0.3s ease-in-out;
+}
+
+header.header--hidden {
+  /* Move the header out of the viewport */
+  top: -100px; /* Adjust if header height changes */
+}

@@ -1,0 +1,45 @@
+<div class="mission-display">
+  {{#if activeMissions}}
+    <div class="active-missions-carousel">
+      <button class="carousel-btn prev-btn" aria-label="Previous Mission"><i class="fas fa-chevron-left"></i></button>
+      <div class="active-missions-container carousel-track">
+        {{#each activeMissions}}
+          <div class="carousel-item">
+            <div class="mission-card">
+              <div class="mission-header">
+                <h2>{{title}}</h2>
+                <span class="status-badge status-{{status}}">{{status}}</span>
+              </div>
+              <div class="mission-content">
+                {{{content}}}
+              </div>
+              <div class="mission-actions">
+                <a href="#{{roadmapId}}" class="roadmap-link-btn">View Project Roadmap</a>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+        </div>
+      <button class="carousel-btn next-btn" aria-label="Next Mission"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  {{/if}}
+
+  {{#if completedMissions}}
+    <div class="archived-missions">
+      <h3>Archived Missions</h3>
+      <div class="archived-missions-list">
+        {{#each completedMissions}}
+          <div class="archived-mission-item">
+              <button class="archived-mission-button" aria-expanded="false">
+                <h4>{{title}}</h4>
+                <span class="status-badge status-{{status}}">{{status}}</span>
+              </button>
+              <div class="archived-mission-content" style="display: none;">
+                {{{content}}}
+              </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+</div>

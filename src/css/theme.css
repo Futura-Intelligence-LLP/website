@@ -1,0 +1,52 @@
+/*
+  Futura Intelligence - Design System
+  Single source of truth for colors, fonts, and core styles.
+*/
+
+:root {
+  /* --- Professional Color Palette --- */
+
+  /* Core & Background - Deep Space Theme */
+  --color-background: #02041d; /* A deeper, richer dark blue */
+  --color-text-primary: #e0e0e0; /* Soft, readable white for body text */
+  --color-text-headings: #ffffff; /* Pure white for main headings */
+
+  /* Primary Accent (for buttons, links, and key highlights) - Derived from Logo */
+  --color-accent-blue: #1e90ff; /* Dodger Blue - Primary */
+  --color-accent-blue-dark: #1070d1;
+  --color-accent-blue-glow: rgba(30, 144, 255, 0.4);
+
+  /* Secondary Accents - From Logo Gradient */
+  --color-accent-purple: #9400d3; /* Purple - complementary */
+  --color-accent-purple-glow: rgba(148, 0, 211, 0.4);
+
+  --color-accent-orange: #ff6b35; /* Vibrant Orange */
+  --color-accent-orange-glow: rgba(255, 107, 53, 0.4);
+
+  --color-accent-green: #5fd068; /* Fresh Green */
+  --color-accent-green-glow: rgba(95, 208, 104, 0.4);
+
+  --color-accent-yellow: #ffd60a; /* Bright Yellow */
+  --color-accent-yellow-glow: rgba(255, 214, 10, 0.4);
+
+  /* Status & Secondary Colors - Derived from Logo Palette */
+  --color-status-ongoing: #9400d3; /* Purple - active & important */
+  --color-status-ongoing-glow: rgba(148, 0, 211, 0.5);
+  --color-status-planned: #ffd60a; /* Bright Yellow - draws attention */
+  --color-status-planned-glow: rgba(255, 214, 10, 0.5);
+  --color-status-completed: #5fd068; /* Green - completed successfully */
+  --color-status-completed-glow: rgba(95, 208, 104, 0.4);
+
+  /* Glassmorphism UI */
+  /* New radial gradient to make cards feel like glowing nebulas */
+  --glass-background: radial-gradient(
+    circle at 50% 50%,
+    rgba(30, 144, 255, 0.15),
+    rgba(10, 25, 47, 0.6) 70%
+  );
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.5);
+
+  /* --- Animations --- */
+  --transition-fast: all 0.2s ease-in-out;
+}

@@ -1,0 +1,51 @@
+{
+  "name": "futura-intelligence-site",
+  "version": "1.0.0",
+  "description": "Futura Intelligence LLP - Brochure Website",
+  "main": "index.html",
+  "homepage": "https://futura-intelligence.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Futura-Intelligence-LLP/website.git"
+  },
+  "scripts": {
+    "clean": "rm -rf static-content/*",
+    "build": "node build.js",
+    "watch": "chokidar 'src/**/*' -c 'npm run build'",
+    "dev": "npm run build && concurrently \"npm run watch\" \"live-server static-content\"",
+    "start": "npm run dev",
+    "version": "npm run build",
+    "postversion": "git push && git push --tags"
+  },
+  "keywords": [
+    "robotics",
+    "AI",
+    "mechatronics",
+    "deep-tech",
+    "automation",
+    "autonomous systems",
+    "computer vision",
+    "motion planning",
+    "intelligence",
+    "agritech",
+    "RaaS"
+  ],
+  "author": "Futura Intelligence LLP",
+  "license": "MIT",
+  "devDependencies": {
+    "chokidar": "^4.0.3",
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^8.2.2",
+    "fs-extra": "^11.3.0",
+    "handlebars": "^4.7.8",
+    "live-server": "^1.2.1",
+    "nodemon": "^3.1.9",
+    "jsdom": "^24.0.0",
+    "front-matter": "^4.0.2",
+    "marked": "^12.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

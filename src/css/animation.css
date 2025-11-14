@@ -1,0 +1,58 @@
+:root {
+  --background-color: #0A1016;
+  --background-gradient-end: #000000;
+  --text-color: #ffffff;
+  --nebula-color-1: rgba(43, 69, 154, 0.15);
+  --nebula-color-2: rgba(55, 28, 84, 0.15);
+  --nebula-color-3: rgba(58, 17, 113, 0.1);
+}
+
+#particles-js {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at bottom, var(--background-color) 0%, var(--background-gradient-end) 100%);
+  z-index: -1;
+}
+
+.space-theme {
+  color: var(--text-color);
+  position: relative;
+  z-index: 1;
+}
+
+#particles-js:after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 25% 30%, var(--nebula-color-1) 0%, transparent 60%),
+    radial-gradient(circle at 75% 70%, var(--nebula-color-2) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, var(--nebula-color-3) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+  animation: nebulaGlow 20s ease-in-out infinite;
+}
+
+@keyframes nebulaGlow {
+  0% {
+    opacity: 0.2;
+    transform: scale(1);
+    filter: hue-rotate(0deg);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+    filter: hue-rotate(20deg);
+  }
+
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+    filter: hue-rotate(0deg);
+  }
+}
