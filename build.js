@@ -17,6 +17,8 @@ const config = {
       landing: "./src/sections/landing.html",
       vision: "./src/sections/vision.html",
       contact: "./src/sections/contact.html",
+      privacy: "./src/sections/privacy.html",
+      terms: "./src/sections/terms.html",
       missionDir: "./src/sections/mission",
       roadmapDir: "./src/sections/roadmap",
     },
@@ -114,6 +116,21 @@ function validateData(missions, roadmaps) {
 }
 
 /**
+ * Creates a full HTML page from a template and content.
+ * @param {string} header - The header HTML.
+ * @param {string} footer - The footer HTML.
+ * @param {string} content - The main content HTML.
+ * @returns {string} - The full HTML page.
+ */
+function createPage(header, footer, content) {
+  return `
+    ${header}
+    <main>${content}</main>
+    ${footer}
+  `;
+}
+
+/**
  * The main build function that orchestrates the static site generation.
  */
 async function main() {
@@ -127,6 +144,8 @@ async function main() {
       landingSection,
       visionSection,
       contactSection,
+      privacySection,
+      termsSection,
       missionTemplate,
       roadmapTemplate,
       missions,
@@ -137,6 +156,8 @@ async function main() {
       fs.readFile(config.paths.sections.landing, "utf8"),
       fs.readFile(config.paths.sections.vision, "utf8"),
       fs.readFile(config.paths.sections.contact, "utf8"),
+      fs.readFile(config.paths.sections.privacy, "utf8"),
+      fs.readFile(config.paths.sections.terms, "utf8"),
       fs.readFile(config.paths.templates.missionSection, "utf8"),
       fs.readFile(config.paths.templates.roadmapSection, "utf8"),
       loadContentFromDirectory(config.paths.sections.missionDir),
@@ -169,25 +190,41 @@ async function main() {
       })
       .join('\n');
 
+    // Compile footer with dynamic data
+    const compiledFooterTemplate = Handlebars.compile(footerTemplate);
+    const startYear = 2025;
+    const currentYear = new Date().getFullYear();
+    const copyrightYear = currentYear > startYear ? `${startYear} - ${currentYear}` : `${startYear}`;
 
-    // Create single-page template with all sections
-    const indexPageTemplate = `
-        ${headerTemplate}
-        <main>
-            <section id="landing" class="space-theme">${landingSection}</section>
-            <section id="vision" class="space-theme">${visionSection}</section>
-            <section id="mission" class="space-theme">${missionSection}</section>
-            ${allRoadmapsHtml}
-            <section id="contact" class="space-theme">${contactSection}</section>
-        </main>
-        ${footerTemplate}
-    `;
+    const renderedFooter = compiledFooterTemplate({
+        currentYear: copyrightYear
+    });
 
+
+    // --- Page Generation ---
     console.log("Creating output directory...");
     await fs.ensureDir(config.paths.output);
 
     console.log("Building pages...");
-    await fs.writeFile(path.join(config.paths.output, "index.html"), indexPageTemplate);
+
+    // Build index.html
+    const mainContent = `
+      <section id="landing" class="space-theme">${landingSection}</section>
+      <section id="vision" class="space-theme">${visionSection}</section>
+      <section id="mission" class="space-theme">${missionSection}</section>
+      ${allRoadmapsHtml}
+      <section id="contact" class="space-theme">${contactSection}</section>
+    `;
+    const indexPage = createPage(headerTemplate, renderedFooter, mainContent);
+    await fs.writeFile(path.join(config.paths.output, "index.html"), indexPage);
+
+    // Build privacy.html and terms.html
+    const privacyPage = createPage(headerTemplate, renderedFooter, `<section class="space-theme">${privacySection}</section>`);
+    await fs.writeFile(path.join(config.paths.output, "privacy.html"), privacyPage);
+
+    const termsPage = createPage(headerTemplate, renderedFooter, `<section class="space-theme">${termsSection}</section>`);
+    await fs.writeFile(path.join(config.paths.output, "terms.html"), termsPage);
+
 
     console.log("Copying assets...");
     await fs.copy(config.paths.assets.css, path.join(config.paths.output, "css"));

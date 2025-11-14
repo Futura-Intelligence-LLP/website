@@ -1,6 +1,6 @@
 ---
 title: "Our First Mission: An Intelligent Fleet for Precision Agriculture"
-createdAt: "2024-05-21T10:00:00Z"
+createdAt: "2025-01-01T10:00:00Z"
 status: "Planned"
 roadmapId: "roadmap"
 ---

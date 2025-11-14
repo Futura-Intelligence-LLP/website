@@ -46,6 +46,26 @@ main {
   flex-direction: column;
 }
 
+footer {
+  background: none;
+  padding: 1.5rem;
+  text-align: center;
+  width: 100%;
+  margin-top: auto; /* Pushes footer to the bottom */
+  position: relative;
+  z-index: 5;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 section {
   min-height: 100vh;
   display: flex;
@@ -56,6 +76,20 @@ section {
   scroll-margin-top: 5rem;
 }
 
+.footer-nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-nav a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-nav a:hover {
+  color: var(--color-accent-blue);
+}
 /** Typography **/
 h1 {
   font-size: 4rem;
@@ -631,6 +665,11 @@ h2 {
   }
   .use-case-grid {
     grid-template-columns: 1fr;
+  }
+  .footer-content {
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
   }
 }
 
