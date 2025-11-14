@@ -6,7 +6,7 @@
   "homepage": "https://futura-intelligence.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/info-dpv-intelligence/futura-intelligence.git"
+    "url": "git+https://github.com/Futura-Intelligence-LLP/website.git"
   },
   "scripts": {
     "clean": "rm -rf static-content/*",
