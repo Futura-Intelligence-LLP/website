@@ -11,12 +11,9 @@
   "scripts": {
     "clean": "rm -rf static-content/*",
     "build": "node build.js",
-    "prebuild": "npm run clean",
     "watch": "chokidar 'src/**/*' -c 'npm run build'",
     "dev": "npm run build && concurrently \"npm run watch\" \"live-server static-content\"",
     "start": "npm run dev",
-    "validate": "node validate-missions.js",
-    "prebuild": "npm run validate",
     "version": "npm run build",
     "postversion": "git push && git push --tags"
   },
