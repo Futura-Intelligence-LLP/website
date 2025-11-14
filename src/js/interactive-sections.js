@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     // --- Responsive Navigation Dropdown ---
+  const header = document.querySelector('header');
   const navToggle = document.querySelector('.nav-toggle');
   const nav = document.querySelector('.main-nav');
   const navLinks = document.querySelectorAll('.nav-link');
@@ -141,10 +142,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (targetRoadmap) {
         // First, hide all other roadmap sections to ensure only one is visible
         allRoadmapSections.forEach(section => {
+          section.classList.remove('is-active-roadmap');
           section.style.display = "none";
         });
 
         targetRoadmap.style.display = "block"; // Show the correct roadmap
+        targetRoadmap.classList.add('is-active-roadmap'); // Set it as active
         targetRoadmap.scrollIntoView({ behavior: 'smooth' }); // Scroll to it
       }
     });
@@ -186,5 +189,34 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCarousel();
     // Recalculate on resize
     window.addEventListener('resize', updateCarousel);
+  }
+
+  // --- Auto-hide Header on Scroll ---
+  if (header) {
+    let scrollTimer;
+    const navbarHeight = header.offsetHeight;
+
+    const handleScroll = () => {
+      const st = window.pageYOffset || document.documentElement.scrollTop;
+
+      // Always show header at the top of the page
+      if (st < navbarHeight) {
+        header.classList.remove('header--hidden');
+        return;
+      }
+
+      // As soon as scrolling starts, hide the header
+      header.classList.add('header--hidden');
+
+      // Clear the previous timer
+      clearTimeout(scrollTimer);
+
+      // Set a new timer to show the header when scrolling stops
+      scrollTimer = setTimeout(() => {
+        header.classList.remove('header--hidden');
+      }, 250); // Show header after 250ms of no scrolling
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
   }
 });

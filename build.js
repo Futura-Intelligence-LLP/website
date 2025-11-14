@@ -4,65 +4,148 @@ const path = require("path");
 const fm = require("front-matter"); // For parsing YAML front-matter
 const { marked } = require("marked"); // For converting Markdown to HTML
 
-async function build() {
-  try {
-    // Register a Handlebars helper for basic math in templates
-    Handlebars.registerHelper("math", function (lvalue, operator, rvalue) {
-      lvalue = parseFloat(lvalue);
-      rvalue = parseFloat(rvalue);
+const config = {
+  paths: {
+    output: "./static-content",
+    templates: {
+      header: "./src/templates/header.html",
+      footer: "./src/templates/footer.html",
+      missionSection: "./src/templates/mission-section.hbs",
+      roadmapSection: "./src/templates/roadmap-section.hbs",
+    },
+    sections: {
+      landing: "./src/sections/landing.html",
+      vision: "./src/sections/vision.html",
+      contact: "./src/sections/contact.html",
+      missionDir: "./src/sections/mission",
+      roadmapDir: "./src/sections/roadmap",
+    },
+    assets: {
+      css: "./src/css",
+      js: "./src/js",
+      assets: "./src/assets",
+    },
+  },
+  missions: {
+    allowedStatuses: ["Ongoing", "Planned", "Completed"],
+  },
+};
+
+/**
+ * Registers custom Handlebars helpers.
+ */
+function registerHandlebarsHelpers() {
+  Handlebars.registerHelper("math", function (lvalue, operator, rvalue) {
+    lvalue = parseFloat(lvalue);
+    rvalue = parseFloat(rvalue);
+    return {
+      "+": lvalue + rvalue,
+      "-": lvalue - rvalue,
+      "*": lvalue * rvalue,
+      "/": lvalue / rvalue,
+      "%": lvalue % rvalue,
+    }[operator];
+  });
+}
+
+/**
+ * Loads content collections from a directory (e.g., missions, roadmaps).
+ * Parses front-matter and converts Markdown body to HTML.
+ * @param {string} dirPath - The path to the directory.
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of content objects.
+ */
+async function loadContentFromDirectory(dirPath) {
+  const files = (await fs.readdir(dirPath)).filter((file) =>
+    file.endsWith(".md")
+  );
+
+  return Promise.all(
+    files.map(async (file) => {
+      const filePath = path.join(dirPath, file);
+      const rawContent = await fs.readFile(filePath, "utf8");
+      const parsed = fm(rawContent);
+
+      // Pre-process body to handle custom spacing comments
+      const bodyWithSpacing = parsed.body.replace(
+        /<!--\s*spacing:\s*(small|medium|large)\s*-->/g,
+        '<div class="spacing-$1"></div>'
+      );
+
       return {
-        "+": lvalue + rvalue,
-        "-": lvalue - rvalue,
-        "*": lvalue * rvalue,
-        "/": lvalue / rvalue,
-        "%": lvalue % rvalue,
-      }[operator];
-    });
+        id: path.parse(file).name,
+        ...parsed.attributes,
+        // Convert the processed body to HTML
+        content: marked(bodyWithSpacing),
+      };
+    })
+  );
+}
+
+/**
+ * Validates that all missions have a corresponding roadmap.
+ * @param {Array<Object>} missions - The array of mission objects.
+ * @param {Array<Object>} roadmaps - The array of roadmap objects.
+ */
+function validateData(missions, roadmaps) {
+  const roadmapIds = new Set(roadmaps.map(r => r.id));
+  for (const mission of missions) {
+    // Validate required front-matter fields
+    if (!mission.title || !mission.createdAt || !mission.status || !mission.roadmapId) {
+      throw new Error(`Mission '${mission.id}.md' is missing required front-matter fields (title, createdAt, status, roadmapId).`);
+    }
+
+    // Enforce status enum
+    if (!config.missions.allowedStatuses.includes(mission.status)) {
+      throw new Error(`Mission '${mission.id}.md' has an invalid status: '${mission.status}'. Must be one of: ${config.missions.allowedStatuses.join(", ")}.`);
+    }
+
+    // Ensure every mission's roadmapId corresponds to a loaded roadmap.
+    if (!roadmapIds.has(mission.roadmapId)) {
+      throw new Error(`Build failed: Mission "${mission.title}" has an invalid roadmapId: "${mission.roadmapId}". No matching roadmap file was found in '${config.paths.sections.roadmapDir}'.`);
+    }
+  }
+
+  // Validate roadmap files
+  for (const roadmap of roadmaps) {
+    if (!roadmap.title || !roadmap.intro || !roadmap.phases || !Array.isArray(roadmap.phases)) {
+      throw new Error(`Roadmap '${roadmap.id}.md' is missing required front-matter fields (title, intro, phases).`);
+    }
+  }
+}
+
+/**
+ * The main build function that orchestrates the static site generation.
+ */
+async function main() {
+  try {
+    registerHandlebarsHelpers();
 
     console.log("Reading templates and sections...");
-    const headerTemplate = fs.readFileSync(
-      "./src/templates/header.html",
-      "utf8"
-    );
-    const footerTemplate = fs.readFileSync(
-      "./src/templates/footer.html",
-      "utf8"
-    );
-    const landingSection = fs.readFileSync("./src/sections/landing.html", "utf8");
-    const visionSection = fs.readFileSync(
-      "./src/sections/vision.html",
-      "utf8"
-    );
-    const contactSection = fs.readFileSync("./src/sections/contact.html", "utf8");
+    const [
+      headerTemplate,
+      footerTemplate,
+      landingSection,
+      visionSection,
+      contactSection,
+      missionTemplate,
+      roadmapTemplate,
+      missions,
+      roadmaps,
+    ] = await Promise.all([
+      fs.readFile(config.paths.templates.header, "utf8"),
+      fs.readFile(config.paths.templates.footer, "utf8"),
+      fs.readFile(config.paths.sections.landing, "utf8"),
+      fs.readFile(config.paths.sections.vision, "utf8"),
+      fs.readFile(config.paths.sections.contact, "utf8"),
+      fs.readFile(config.paths.templates.missionSection, "utf8"),
+      fs.readFile(config.paths.templates.roadmapSection, "utf8"),
+      loadContentFromDirectory(config.paths.sections.missionDir),
+      loadContentFromDirectory(config.paths.sections.roadmapDir),
+    ]);
 
-    // Read all mission files from the directory
-    const missionDir = "./src/sections/mission";
-    const missionFiles = (await fs.readdir(missionDir)).filter(file => file.endsWith('.md'));
-
-    const ALLOWED_STATUSES = ['Ongoing', 'Planned', 'Completed'];
-
-    let missions = await Promise.all(
-      missionFiles.map(async (file) => {
-        const filePath = path.join(missionDir, file);
-        const rawContent = await fs.readFile(filePath, "utf8");
-        const parsed = fm(rawContent);
-
-        // Validate front matter
-        if (!parsed.attributes.title || !parsed.attributes.createdAt || !parsed.attributes.status || !parsed.attributes.roadmapId) {
-          throw new Error(`Mission file '${file}' is missing required front-matter fields (title, createdAt, status, roadmapId).`);
-        }
-
-        // Enforce status enum
-        if (!ALLOWED_STATUSES.includes(parsed.attributes.status)) {
-            throw new Error(`Mission file '${file}' has an invalid status: '${parsed.attributes.status}'. Must be one of: ${ALLOWED_STATUSES.join(', ')}.`);
-        }
-
-        return {
-          ...parsed.attributes,
-          content: marked(parsed.body), // Convert markdown body to HTML
-        };
-      })
-    );
+    // --- VALIDATION STEP ---
+    console.log("Validating data integrity...");
+    validateData(missions, roadmaps);
 
     // Sort missions by createdAt date, newest first
     missions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -71,120 +154,19 @@ async function build() {
     const activeMissions = missions.filter(m => m.status === 'Ongoing' || m.status === 'Planned');
     const completedMissions = missions.filter(m => m.status === 'Completed');
 
-    // Define the template for the entire mission section
-    const missionTemplate = `
-      <div class="mission-display">
-        {{#if activeMissions}}
-          <div class="active-missions-carousel">
-            <button class="carousel-btn prev-btn" aria-label="Previous Mission"><i class="fas fa-chevron-left"></i></button>
-            <div class="active-missions-container carousel-track">
-              {{#each activeMissions}}
-                <div class="carousel-item">
-                  <div class="mission-card">
-                    <div class="mission-header">
-                      <h2>{{title}}</h2>
-                      <span class="status-badge status-{{status}}">{{status}}</span>
-                    </div>
-                    <div class="mission-content">
-                      {{{content}}}
-                    </div>
-                    <div class="mission-actions">
-                      <a href="#{{roadmapId}}" class="roadmap-link-btn">View Project Roadmap</a>
-                    </div>
-                  </div>
-                </div>
-              {{/each}}
-              </div>
-            <button class="carousel-btn next-btn" aria-label="Next Mission"><i class="fas fa-chevron-right"></i></button>
-          </div>
-        {{/if}}
-
-        {{#if completedMissions}}
-          <div class="archived-missions">
-            <h3>Archived Missions</h3>
-            <div class="archived-missions-list">
-              {{#each completedMissions}}
-                <div class="archived-mission-item">
-                   <button class="archived-mission-button" aria-expanded="false">
-                      <h4>{{title}}</h4>
-                      <span class="status-badge status-{{status}}">{{status}}</span>
-                   </button>
-                   <div class="archived-mission-content" style="display: none;">
-                      {{{content}}}
-                   </div>
-                </div>
-              {{/each}}
-            </div>
-          </div>
-        {{/if}}
-      </div>
-    `;
     const missionSection = Handlebars.compile(missionTemplate)({
       activeMissions,
       completedMissions,
     });
 
     // Read and compile all roadmap sections
-    const roadmapDir = "./src/sections/roadmap";
-    const roadmapFiles = (await fs.readdir(roadmapDir)).filter(file => file.endsWith('.md'));
-
-    const roadmapTemplate = `
-      <div class="roadmap-container">
-        <div class="phase-backdrop"></div>
-        <h2 class="roadmap-title">{{title}}</h2>
-        <p class="roadmap-intro">{{intro}}</p>
-        <div class="roadmap-timeline">
-            {{#each phases}}
-            <div class="timeline-item">
-                <!-- Icon is a sibling and always present -->
-                <div class="timeline-icon" aria-hidden="true"><i class="fas fa-rocket"></i></div>
-
-                <!-- Connector line from icon to pill -->
-                <div class="timeline-connector"></div>
-
-                <!-- Mobile pill + accordion trigger: visible on small screens, toggles accordion -->
-                <button class="timeline-trigger" aria-expanded="false">
-                    <div class="timeline-pill">
-                        <h3 class="timeline-phase-title">{{title}}</h3>
-                    </div>
-                </button>
-
-                <!-- Content card: modal-style on mobile, visible on desktop -->
-                <div class="phase-card">
-                  <div class="phase-header">
-                    <h3 class="phase-card-title">{{title}}</h3>
-                    <button class="phase-close-btn" aria-label="Close phase details" title="Close">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                  <p class="phase-objective"><strong>Objective:</strong> {{objective}}</p>
-                  <span class="phase-duration">{{duration}}</span>
-                </div>
-            </div>
-            {{/each}}
-        </div>
-      </div>
-    `;
     const compiledRoadmapTemplate = Handlebars.compile(roadmapTemplate);
 
-    const roadmapData = {};
-    for (const file of roadmapFiles) {
-      const roadmapId = path.parse(file).name;
-      const rawContent = await fs.readFile(path.join(roadmapDir, file), "utf8");
-      const parsed = fm(rawContent);
-      roadmapData[roadmapId] = compiledRoadmapTemplate(parsed.attributes);
-    }
-
-    // --- VALIDATION STEP ---
-    // Ensure every mission's roadmapId corresponds to a loaded roadmap.
-    for (const mission of missions) {
-      if (!roadmapData[mission.roadmapId]) {
-        throw new Error(`Build failed: Mission "${mission.title}" has an invalid roadmapId: "${mission.roadmapId}". No matching roadmap file was found in '${roadmapDir}'.`);
-      }
-    }
-
-    const allRoadmapsHtml = Object.entries(roadmapData)
-      .map(([id, content]) => `<section id="${id}" class="space-theme roadmap-section">${content}</section>`)
+    const allRoadmapsHtml = roadmaps
+      .map((roadmap) => {
+        const content = compiledRoadmapTemplate(roadmap);
+        return `<section id="${roadmap.id}" class="space-theme roadmap-section">${content}</section>`;
+      })
       .join('\n');
 
 
@@ -202,15 +184,15 @@ async function build() {
     `;
 
     console.log("Creating output directory...");
-    await fs.ensureDir("./static-content");
+    await fs.ensureDir(config.paths.output);
 
     console.log("Building pages...");
-    await fs.writeFile("./static-content/index.html", indexPageTemplate);
+    await fs.writeFile(path.join(config.paths.output, "index.html"), indexPageTemplate);
 
     console.log("Copying assets...");
-    await fs.copy("./src/css", "./static-content/css");
-    await fs.copy("./src/js", "./static-content/js");
-    await fs.copy("./src/assets", "./static-content/assets");
+    await fs.copy(config.paths.assets.css, path.join(config.paths.output, "css"));
+    await fs.copy(config.paths.assets.js, path.join(config.paths.output, "js"));
+    await fs.copy(config.paths.assets.assets, path.join(config.paths.output, "assets"));
 
     console.log("Build completed successfully!");
   } catch (error) {
@@ -219,4 +201,4 @@ async function build() {
   }
 }
 
-build();
+main();

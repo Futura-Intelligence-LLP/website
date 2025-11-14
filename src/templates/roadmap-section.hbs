@@ -1,0 +1,47 @@
+<div class="roadmap-container">
+  <div class="phase-backdrop"></div>
+  <h2 class="roadmap-title">{{title}}</h2>
+  <p class="roadmap-intro">{{intro}}</p>
+  <div class="roadmap-timeline">
+      {{#each phases}}
+      <div class="timeline-item">
+          <!-- Icon is a sibling and always present -->
+          <div class="timeline-icon" aria-hidden="true"><i class="fas fa-rocket"></i></div>
+
+          <!-- Connector line from icon to pill -->
+          <div class="timeline-connector"></div>
+
+          <!-- Mobile pill + accordion trigger: visible on small screens, toggles accordion -->
+          <button class="timeline-trigger" aria-expanded="false">
+              <div class="timeline-pill">
+                  <h3 class="timeline-phase-title">{{title}}</h3>
+              </div>
+          </button>
+
+          <!-- Content card: modal-style on mobile, visible on desktop -->
+          <div class="phase-card">
+            <div class="phase-header">
+              <h3 class="phase-card-title">{{title}}</h3>
+              <button class="phase-close-btn" aria-label="Close phase details" title="Close">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="phase-details">
+              <p class="phase-objective"><strong>Objective:</strong> {{objective}}</p>
+              <span class="phase-duration">{{duration}}</span>
+              {{#if milestones}}
+              <div class="phase-milestones">
+                <h5>Key Milestones:</h5>
+                <ul>
+                  {{#each milestones}}
+                  <li>{{this}}</li>
+                  {{/each}}
+                </ul>
+              </div>
+              {{/if}}
+            </div>
+          </div>
+      </div>
+      {{/each}}
+  </div>
+</div>

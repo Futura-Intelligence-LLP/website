@@ -112,18 +112,21 @@
 
 .status-Ongoing {
   background-color: var(--color-status-ongoing);
-  box-shadow: 0 0 15px var(--color-status-ongoing-glow);
+  box-shadow: 0 0 8px var(--color-status-ongoing-glow);
 }
 
 .status-Completed {
   background-color: var(--color-status-completed);
-  box-shadow: 0 0 15px var(--color-status-completed-glow);
+  box-shadow: 0 0 8px var(--color-status-completed-glow);
   color: #e0e0e0;
 }
 
 .status-Planned {
   background-color: var(--color-status-planned);
-  box-shadow: 0 0 15px var(--color-status-planned-glow);
+  box-shadow: 0 0 8px var(--color-status-planned-glow);
+  color: var(
+    --color-background
+  ); /* Use dark background color for text for high contrast */
 }
 
 .mission-content {
@@ -272,6 +275,12 @@
   padding: 4rem 1.5rem;
 }
 
+/* When a roadmap is being viewed, give it a higher z-index to ensure modals appear on top of other sections */
+.roadmap-section.is-active-roadmap {
+  position: relative;
+  z-index: 20;
+}
+
 .roadmap-container {
   max-width: 1100px;
   margin: 0 auto;
@@ -331,7 +340,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.05rem;
-  box-shadow: 0 0 18px var(--color-accent-blue-glow);
+  box-shadow: 0 0 8px var(--color-accent-blue-glow);
   color: #fff;
 }
 
@@ -401,6 +410,9 @@
   opacity: 0;
   pointer-events: none;
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  max-height: 450px; /* Set a max-height for desktop cards */
 }
 
 .phase-header {
@@ -410,6 +422,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .phase-card-title {
@@ -440,16 +453,71 @@
   color: var(--color-text-headings);
 }
 
+.phase-details {
+  padding: 1rem;
+  overflow-y: auto; /* Make this section scrollable */
+  flex-grow: 1; /* Allow it to fill available space */
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* Consistent spacing between elements */
+}
+
 .phase-duration {
   font-size: 0.9rem;
-  color: var(--color-text-primary);
-  opacity: 0.8;
+  font-weight: 600;
+  color: var(--color-accent-orange);
+  background: rgba(255, 107, 53, 0.1);
+  border: 1px solid var(--color-accent-orange);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  align-self: flex-start; /* Align to the start of the flex container */
+  margin-bottom: 0.5rem; /* Add some space below it */
 }
 
 .phase-objective {
-  padding: 0 1rem 1rem;
   margin: 0;
-  line-height: 1.6;
+}
+
+.phase-milestones {
+  margin-top: 0.5rem;
+}
+
+.phase-milestones h5 {
+  font-size: 1rem;
+  color: var(--color-text-headings);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.phase-milestones ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.phase-milestones li {
+  position: relative;
+  padding-left: 1.75rem; /* Space for the icon */
+  line-height: 1.5;
+}
+
+.phase-milestones li::before {
+  content: "\f058"; /* FontAwesome solid check-circle */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  top: 2px;
+  color: var(--color-accent-green);
+  font-size: 1rem;
 }
 
 .timeline-item.is-active .phase-card {
@@ -483,15 +551,6 @@
 
 /* Desktop: two-column timeline */
 @media (min-width: 768px) {
-  /* On desktop, revert modal styles to static block */
-  .phase-card {
-    visibility: visible;
-    position: static;
-    transform: none;
-    opacity: 1;
-    pointer-events: auto;
-    transition: none;
-  }
   .roadmap-timeline {
     max-width: 1000px;
     /* Reset mobile padding */
@@ -529,17 +588,22 @@
   .phase-card {
     position: static;
     transform: none;
+    opacity: 1;
+    pointer-events: auto;
     width: 100%;
-    max-height: none;
-    overflow: visible;
+    max-height: 450px; /* Set a max-height for desktop cards */
     padding: 1rem;
     margin-top: 0;
-    /* Reset transition properties from mobile accordion */
     transition: none;
   }
 
   .phase-card-title {
     display: block;
+  }
+
+  .phase-details {
+    padding: 1rem;
+    overflow-y: auto;
   }
 
   .phase-close-btn {
@@ -591,4 +655,16 @@
     left: 0;
     transform: translateX(-50%);
   }
+}
+
+/* --- Auto-hide Header Styles --- */
+header {
+  /* Ensure the header has a fixed position and transition */
+  position: fixed;
+  transition: top 0.3s ease-in-out;
+}
+
+header.header--hidden {
+  /* Move the header out of the viewport */
+  top: -100px; /* Adjust if header height changes */
 }
