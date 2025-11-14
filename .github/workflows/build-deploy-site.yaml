@@ -7,7 +7,7 @@ on:
 
 # These permissions are required for the deploy-pages action
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -54,3 +54,11 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Bump version and push tag
+        # This step runs only on the main branch after a successful deployment
+        if: github.ref == 'refs/heads/main'
+        uses: anothrNick/github-tag-action@1.67.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
