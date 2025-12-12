@@ -3,7 +3,7 @@ title: "Our Strategic Roadmap"
 intro: "Our journey moves from deep-tech validation to regional dominance. We adopt a direct operational model to ensure hardware reliability and product-market fit before scaling."
 phases:
   - title: "Phase 1: Emergence & Validation"
-    duration: "(First 18 Months)"
+    duration: "Project Quarters 1-6"
     objective: "Develop our Minimum Viable Product (MVP), secure pilot partners, and set the stage to validate our technology and business model in real-world agricultural settings."
     milestones:
       - "Complete foundational R&D, including mathematical modeling and simulation for autonomous navigation and manipulator control."
@@ -12,7 +12,7 @@ phases:
       - "Directly operate beta units in a pilot program to validate efficacy and gather field data."
 
   - title: "Phase 2: The Alpha Fleet"
-    duration: "(Operational Scale)"
+    duration: "Project Quarters 7-8(Operational Scale)"
     objective: "Deploy a Company-Owned fleet to stress-test hardware reliability and finalize our ruggedized design based on real-world data."
     milestones:
       - "Deploy a 10-unit Company-Owned fleet to achieve continuous field operations."
